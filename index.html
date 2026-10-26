@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Balonmano · Estadísticas privadas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast hidden"></div>
+
+  <section id="loginView" class="login-shell">
+    <div class="login-card">
+      <div class="brand-mark">B</div>
+      <h1>Balonmano Estadísticas</h1>
+      <p class="muted">Área privada</p>
+
+      <form id="loginForm">
+        <label>Correo
+          <input id="email" type="email" autocomplete="email" required>
+        </label>
+        <label>Contraseña
+          <input id="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="primary wide" type="submit">Entrar</button>
+      </form>
+
+      <p id="loginError" class="error"></p>
+    </div>
+  </section>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark small">B</div>
+        <div>
+          <strong>Balonmano</strong>
+          <span>Estadísticas</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active" data-page="dashboard">Resumen</button>
+        <button class="nav-btn" data-page="partidos">Partidos</button>
+        <button class="nav-btn" data-page="jugadoras">Jugadoras</button>
+        <button class="nav-btn" data-page="rankings">Rankings</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="ghost">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Resumen</h2>
+          <p id="pageSubtitle" class="muted">Temporada · datos acumulados</p>
+        </div>
+        <button id="refreshBtn" class="secondary">Actualizar</button>
+      </header>
+
+      <div id="content" class="content"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
