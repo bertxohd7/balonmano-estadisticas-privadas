@@ -36,6 +36,16 @@ function toast(msg){
   const t=document.getElementById('toast'); t.textContent=msg;t.classList.remove('hidden');
   setTimeout(()=>t.classList.add('hidden'),2500);
 }
+
+function sortMatchesOldestFirst(rows){
+  return [...rows].sort((a,b)=>{
+    const fa = a.fecha || '';
+    const fb = b.fecha || '';
+    if(fa !== fb) return fa.localeCompare(fb); // YYYY-MM-DD: antiguo -> reciente
+    return (Number(a.partido_id)||0) - (Number(b.partido_id)||0);
+  });
+}
+
 async function query(view, select='*', filters=[]){
   let q=sb.from(view).select(select);
   for(const [op,col,val] of filters) q=q[op](col,val);
@@ -75,7 +85,7 @@ async function showDashboard(){
       <div class="two-col">
         <div>
           <div class="section-title"><h3>Últimos partidos</h3></div>
-          ${renderMatches(matches.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).slice(0,5))}
+          ${renderMatches(sortMatchesOldestFirst(matches).slice(0,5))}
         </div>
         <div>
           <div class="section-title"><h3>Goleadoras</h3></div>
@@ -105,9 +115,9 @@ function renderBars(rows,key){
 async function showMatches(){
   currentPage='partidos'; setPageMeta('Partidos','Consulta y detalle por partido'); loading();
   try{
-    const rows=await query('v_partidos_resumen');
+    let rows=await query('v_partidos_resumen');
     // Orden: partido más antiguo arriba, más reciente abajo
-    rows.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+    rows = sortMatchesOldestFirst(rows);
     content.innerHTML=`<div class="section-title"><h3>${rows.length} partidos</h3></div>${renderMatches(rows)}`;
   }catch(e){fail(e)}
 }
