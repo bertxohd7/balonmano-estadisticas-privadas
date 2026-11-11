@@ -110,32 +110,79 @@ async function showMatches(){
     content.innerHTML=`<div class="section-title"><h3>${rows.length} partidos</h3></div>${renderMatches(rows)}`;
   }catch(e){fail(e)}
 }
+function renderScoreboard(m){
+  return `
+    <div class="scoreboard">
+      <div class="scoreboard-inner">
+        <div>
+          <div class="club-name">${esc(m.equipo)}</div>
+          <div class="score-number">${n(m.resultado_equipo)}</div>
+        </div>
+        <div class="score-sep">—</div>
+        <div>
+          <div class="club-name">${esc(m.rival)}</div>
+          <div class="score-number">${n(m.resultado_rival)}</div>
+        </div>
+      </div>
+      <div class="score-date">${fmtDate(m.fecha)}</div>
+    </div>`;
+}
+
+function renderQuarterBreakdown(rows){
+  if(!rows.length) return '<div class="card empty">No hay detalle por cuartos.</div>';
+  const m = rows[0];
+  rows.sort((a,b)=>a.cuarto-b.cuarto);
+
+  return `<div class="table-wrap"><table><thead><tr>
+    <th>Cuarto</th>
+    <th>${esc(m.equipo)}</th>
+    <th>${esc(m.rival)}</th>
+    <th>0–3 min</th>
+    <th>3–6 min</th>
+    <th>6–10 min</th>
+    <th>Dato</th>
+  </tr></thead><tbody>
+    ${rows.map(r=>`<tr>
+      <td>${n(r.cuarto)}</td>
+      <td>${n(r.goles_cuarto_equipo)}</td>
+      <td>${n(r.goles_cuarto_rival)}</td>
+      <td>${n(r.equipo_0_3)} – ${n(r.rival_0_3)}</td>
+      <td>${n(r.equipo_3_6)} – ${n(r.rival_3_6)}</td>
+      <td>${n(r.equipo_6_10)} – ${n(r.rival_6_10)}</td>
+      <td><span class="badge ${r.estimado?'bad':'good'}">${r.estimado?'Estimado':'Real'}</span></td>
+    </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
 async function showMatch(id){
-  setPageMeta('Detalle del partido','Estadísticas individuales y evolución por cuartos'); loading();
+  setPageMeta('Detalle del partido','Marcador, cuartos y estadísticas individuales'); loading();
   try{
-    const [m,totals,detail,tramos]=await Promise.all([
+    const [m,totals,detail,scoreDetail]=await Promise.all([
       query('v_partidos_resumen','*',[['eq','partido_id',id]]),
       query('v_totales_jugadora_partido','*',[['eq','partido_id',id]]),
       query('v_estadisticas_partido_detalle','*',[['eq','partido_id',id]]),
-      query('v_goles_tramos_partido','*',[['eq','partido_id',id]])
+      query('v_marcador_partido_detalle','*',[['eq','partido_id',id]])
     ]);
-    if(!m.length){content.innerHTML='<div class="card empty">Partido no encontrado.</div>';return}
+    if(!m.length){
+      content.innerHTML='<div class="card empty">Partido no encontrado.</div>';
+      return;
+    }
     const p=m[0];
     totals.sort((a,b)=>(b.goles||0)-(a.goles||0));
+
     content.innerHTML=`
       <button class="secondary back" onclick="showMatches()">← Volver a partidos</button>
-      <div class="grid cards">
-        ${statCard('Fecha',fmtDate(p.fecha))}
-        ${statCard('Partido',`${p.equipo} - ${p.rival}`)}
-        ${statCard('Resultado',`${n(p.resultado_equipo)} - ${n(p.resultado_rival)}`)}
-        ${statCard('Pabellón',p.pabellon||'—')}
-      </div>
+
+      ${renderScoreboard(p)}
+
+      <div class="section-title"><h3>Resultado por cuartos y tramos</h3></div>
+      ${renderQuarterBreakdown(scoreDetail)}
+
       <div class="section-title"><h3>Totales por jugadora</h3></div>
       ${renderPlayerTotals(totals)}
+
       <div class="section-title"><h3>Detalle por cuarto</h3></div>
       ${renderDetail(detail)}
-      <div class="section-title"><h3>Goles por tramos</h3></div>
-      ${renderSegments(tramos)}
     `;
   }catch(e){fail(e)}
 }
@@ -155,16 +202,6 @@ function renderDetail(rows){
     <td>${n(r.cuarto)}</td><td>${esc(r.jugadora)}</td><td>${n(r.pe)}</td><td>${n(r.rob)}</td><td>${n(r.dob)}</td>
     <td>${n(r.pas)}</td><td>${n(r.tiros_fallados)}</td><td>${n(r.goles)}</td><td>${n(r.lanzamientos)}</td>
     <td>${pct(r.porcentaje_tiro)}</td><td>${n(r.par)}</td>
-  </tr>`).join('')}</tbody></table></div>`;
-}
-function renderSegments(rows){
-  rows.sort((a,b)=>a.cuarto-b.cuarto);
-  return `<div class="table-wrap"><table><thead><tr>
-    <th>Cuarto</th><th>Equipo 0-3</th><th>Rival 0-3</th><th>Equipo 3-6</th><th>Rival 3-6</th><th>Equipo 6-10</th><th>Rival 6-10</th><th>Dato</th>
-  </tr></thead><tbody>${rows.map(r=>`<tr>
-    <td>${r.cuarto}</td><td>${n(r.equipo_0_3)}</td><td>${n(r.rival_0_3)}</td><td>${n(r.equipo_3_6)}</td>
-    <td>${n(r.rival_3_6)}</td><td>${n(r.equipo_6_10)}</td><td>${n(r.rival_6_10)}</td>
-    <td><span class="badge ${r.estimado?'bad':'good'}">${r.estimado?'Estimado':'Real'}</span></td>
   </tr>`).join('')}</tbody></table></div>`;
 }
 async function showPlayers(){

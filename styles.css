@@ -61,3 +61,46 @@ tr.clickable:hover{background:#f4f8ff;cursor:pointer}
 @media(max-width:600px){
   .content,.topbar{padding:16px}.grid.cards{grid-template-columns:1fr}.sidebar nav{grid-template-columns:repeat(2,1fr)}
 }
+
+
+/* Marcador del partido */
+.scoreboard{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px;
+  margin:18px 0;
+}
+.scoreboard-inner{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:18px;
+  text-align:center;
+}
+.club-name{
+  font-size:19px;
+  font-weight:800;
+}
+.score-number{
+  font-size:44px;
+  font-weight:900;
+  line-height:1;
+  margin-top:6px;
+}
+.score-sep{
+  font-size:28px;
+  color:var(--muted);
+  font-weight:700;
+}
+.score-date{
+  margin-top:10px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+@media(max-width:600px){
+  .scoreboard-inner{grid-template-columns:1fr}
+  .score-sep{display:none}
+  .score-number{font-size:36px}
+}
