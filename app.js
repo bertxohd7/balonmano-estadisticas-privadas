@@ -75,7 +75,7 @@ async function showDashboard(){
       <div class="two-col">
         <div>
           <div class="section-title"><h3>Últimos partidos</h3></div>
-          ${renderMatches(matches.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).slice(0,5))}
+          ${renderMatches(matches.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).slice(0,5))}
         </div>
         <div>
           <div class="section-title"><h3>Goleadoras</h3></div>
@@ -106,8 +106,8 @@ async function showMatches(){
   currentPage='partidos'; setPageMeta('Partidos','Consulta y detalle por partido'); loading();
   try{
     const rows=await query('v_partidos_resumen');
-    // Orden: partido más reciente arriba, más antiguo abajo
-    rows.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+    // Orden: partido más antiguo arriba, más reciente abajo
+    rows.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
     content.innerHTML=`<div class="section-title"><h3>${rows.length} partidos</h3></div>${renderMatches(rows)}`;
   }catch(e){fail(e)}
 }
