@@ -106,6 +106,7 @@ async function showMatches(){
   currentPage='partidos'; setPageMeta('Partidos','Consulta y detalle por partido'); loading();
   try{
     const rows=await query('v_partidos_resumen');
+    // Orden: partido más reciente arriba, más antiguo abajo
     rows.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
     content.innerHTML=`<div class="section-title"><h3>${rows.length} partidos</h3></div>${renderMatches(rows)}`;
   }catch(e){fail(e)}
