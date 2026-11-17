@@ -255,7 +255,7 @@ async function showPlayer(id){
       <div class="table-wrap"><table><thead><tr>
         <th>Fecha</th><th>Rival</th><th>Cuartos</th><th>Goles</th><th>Fallados</th><th>Lanz.</th><th>%</th><th>Robos</th><th>Pérdidas</th>
       </tr></thead><tbody>${games.map(g=>`<tr class="clickable" onclick="showMatch(${Number(g.partido_id)})">
-        <td>${fmtDate(g.fecha)}</td><td>${esc(g.rival)}</td><td>${n(g.cuartos_jugados)}</td><td>${n(g.goles)}</td>
+        <td>${fmtDate(g.fecha)}</td><td>${esc(g.rival_kukullaga || g.rival)}</td><td>${n(g.cuartos_jugados)}</td><td>${n(g.goles)}</td>
         <td>${n(g.tiros_fallados)}</td><td>${n(g.lanzamientos)}</td><td>${pct(g.porcentaje_tiro)}</td>
         <td>${n(g.rob)}</td><td>${n(g.perdidas)}</td>
       </tr>`).join('')}</tbody></table></div>`;
